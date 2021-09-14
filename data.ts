@@ -22,7 +22,7 @@ const getPerson = async (id: any) => {
       if (res) {
           console.log('Success!')
         console.log(res.rows);
-        console.log(res.rows[id])
+        // console.log(res.rows[id])
       } else if(err) {
         console.log(err.message);
         console.log('Fail!')
@@ -36,6 +36,6 @@ const getPerson = async (id: any) => {
   return res;
 };
 
-getPerson(2)
+getPerson(1)
 
 export { getPerson };
