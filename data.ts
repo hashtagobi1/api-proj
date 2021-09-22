@@ -7,35 +7,66 @@ const client = new Client({
   database: "personalInfo",
 });
 
-client.connect();
+const getAllActors = async () => {
+  try {
+    client.connect();
 
+    const res = await client.query("SELECT * FROM actor limit 5");
+    await client.end();
+    console.log(res.rows);
 
-
-const getPerson = async (id: any) => {
-  // const res = await client.query("SELECT $1::text as message", ["Hello world!"]);
-  // const res = await client.query("SELECT $1::text as message", ["Hello world!"]);
-
-  const res = await client.query(
-    "SELECT * FROM actor",
-    (res: any, err: any) => {
-        console.log(client.database) // * This says 'personalInfo'
-      if (res) {
-          console.log('Success!')
-        console.log(res.rows);
-        // console.log(res.rows[id])
-      } else if(err) {
-        console.log(err.message);
-        console.log('Fail!')
-      }
-    }
-  );
-
-//   console.log(res.rows[0].message); // Hello world!
-  await client.end();
-
-  return res;
+    return res;
+  } catch (error) {
+    console.log("error!", error);
+  }
 };
 
-getPerson(1)
+const addEmail = async () => {
+  try {
+    await client.query("ALTER TABLE actor ADD email varchar(255) ;");
+  } catch (error) {}
+};
 
-export { getPerson };
+const addAge = async () => {
+  try {
+    await client.query("ALTER TABLE actor ADD age INTEGER UNIQUE ;");
+  } catch (error) {}
+};
+
+const addColumns = (): void => {
+  addEmail();
+  addAge();
+  getAllActors();
+};
+
+const DELETE_AGE_EMAIL = async (): Promise<void> => {
+  try {
+    await client.query(
+      "ALTER TABLE actor DROP COLUMN IF EXISTS age, DROP COLUMN IF EXISTS email ;"
+    );
+  } catch (error) {}
+};
+
+const deleteColumns = (): void => {
+  DELETE_AGE_EMAIL();
+  getAllActors();
+};
+
+const insertDetails = async () => {
+  try {
+    await client.query(
+      // TODO: ideally we'd want to only insert if the columns exist
+      // TODO: why can't we update age? ERROR -> column "age" of relation "actor" contains null values
+      "UPDATE actor SET email = '@gmail.com';"
+    );
+  } catch (error) {}
+};
+
+const insertColumns = () => {
+  insertDetails();
+  getAllActors();
+};
+// addColumns();
+deleteColumns();
+// insertColumns();
+export { getAllActors };
